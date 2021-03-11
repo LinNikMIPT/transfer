@@ -303,6 +303,7 @@ def train(args):
     best_test = 0
     iter_cnt = 0
 
+    ac = []
     for epoch in range(args.max_epoch):
         iter_cnt = train_epoch(
             iter_cnt,
@@ -328,6 +329,7 @@ def train(args):
 
         curr_test, confusion_mat, _ = evaluate(encoder, classifier, test_loader, args)
         say("Test accuracy: {:.4f}\n".format(curr_test))
+        ac.append(curr_test)
 
         if valid_loader and curr_dev >= best_dev:
             best_dev = curr_dev
@@ -337,6 +339,12 @@ def train(args):
                 say(colored("Save model to {}\n".format(args.save_model + ".best"), 'red'))
                 torch.save([encoder, classifier], args.save_model + ".best")
             say("\n")
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(10, 5))
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch ')
+    plt.plot(ac)
+
 
     if valid_loader:
         say(colored("Best test accuracy {:.4f}\n".format(best_test), 'red'))
